@@ -1340,7 +1340,7 @@ detachPci.resolve = {
 // -------------------------------------------------------------------
 
 export function stats ({ vm, granularity }) {
-  return this.getXapiVmStats(vm, granularity)
+  return this.getXapiVmStats(vm._xapiId, granularity)
 }
 
 stats.description = 'returns statistics about the VM'
