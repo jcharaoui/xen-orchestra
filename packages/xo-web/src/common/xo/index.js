@@ -1118,12 +1118,13 @@ export const importDeltaBackup = ({ remote, file, sr, mapVdisSrs }) =>
   )
 
 import RevertSnapshotModalBody from './revert-snapshot-modal' // eslint-disable-line import/first
-export const revertSnapshot = vm =>
+export const revertSnapshot = snapshot =>
   confirm({
     title: _('revertVmModalTitle'),
     body: <RevertSnapshotModalBody />,
   }).then(
-    snapshotBefore => _call('vm.revert', { id: resolveId(vm), snapshotBefore }),
+    snapshotBefore =>
+      _call('vm.revert', { snapshot: resolveId(snapshot), snapshotBefore }),
     noop
   )
 
@@ -1201,11 +1202,14 @@ export const createVgpu = (vm, { gpuGroup, vgpuType }) =>
 
 export const deleteVgpu = vgpu => _call('vm.deleteVgpu', resolveIds({ vgpu }))
 
-export const shareVm = (vm, resourceSet) =>
+export const shareVm = async (vm, resourceSet) =>
   confirm({
     title: _('shareVmInResourceSetModalTitle'),
     body: _('shareVmInResourceSetModalMessage', {
-      self: renderXoItem(resourceSet),
+      self: renderXoItem({
+        ...(await getResourceSet(resourceSet)),
+        type: 'resourceSet',
+      }),
     }),
   }).then(() => editVm(vm, { share: true }), noop)
 
@@ -1681,6 +1685,9 @@ export const deleteResourceSet = async id => {
 
 export const recomputeResourceSetsLimits = () =>
   _call('resourceSet.recomputeAllLimits')
+
+export const getResourceSet = id =>
+  _call('resourceSet.get', { id: resolveId(id) })
 
 // Remote ------------------------------------------------------------
 
